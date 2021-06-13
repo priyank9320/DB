@@ -81,11 +81,13 @@ class Trainer:
                 self.logger.report_time('Validating ')
                 if self.logger.verbose:
                     # torch.cuda.synchronize()
+                    pass
 
                 self.train_step(model, optimizer, batch,
                                 epoch=epoch, step=self.steps)
                 if self.logger.verbose:
                     # torch.cuda.synchronize()
+                    pass
                 self.logger.report_time('Forwarding ')
 
                 self.model_saver.maybe_save_model(
