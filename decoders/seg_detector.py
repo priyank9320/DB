@@ -7,6 +7,7 @@ BatchNorm2d = nn.BatchNorm2d
 import os
 
 # we will be storing the visualisations in the maps folder
+
 path='./maps'
 try: 
     os.mkdir(path) 
