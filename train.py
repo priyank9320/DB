@@ -43,6 +43,8 @@ def main():
     parser.add_argument('--benchmark', action='store_true', dest='benchmark', help='Open cudnn benchmark mode')
     parser.add_argument('--no-benchmark', action='store_false', dest='benchmark', help='Turn cudnn benchmark mode off')
     parser.add_argument('-d', '--distributed', action='store_true', dest='distributed', help='Use distributed training')
+    #parser.add_argument('-s', '--dist', action='store_true', dest='split', help='Use to split data set for training')
+
     parser.add_argument('--local_rank', dest='local_rank', default=0, type=int, help='Use distributed training')
     parser.add_argument('-g', '--num_gpus', dest='num_gpus', default=4, type=int, help='The number of accessible gpus')
     parser.set_defaults(debug=False)
@@ -63,7 +65,7 @@ def main():
 
     if not args['print_config_only']:
         torch.backends.cudnn.benchmark = args['benchmark']
-        trainer = Trainer(experiment)
+        trainer = Trainer(experiment) # creates object of the Trainer class in trainer.py file 
         trainer.train()
 
 if __name__ == '__main__':

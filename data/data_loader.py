@@ -48,6 +48,20 @@ class DataLoader(Configurable, torch.utils.data.DataLoader):
                 num_workers=self.num_workers, pin_memory=False,
                 drop_last=self.drop_last, collate_fn=self.collect_fn,
                 worker_init_fn=default_worker_init_fn)
+
+        if cmd.get('split'):
+            sampler = DistributedSampler(
+                self.dataset, shuffle=self.shuffle,
+                num_replicas= 10  #cmd['num_gpus'] 
+                )
+            batch_sampler = BatchSampler(
+                sampler, self.batch_size//cmd['num_gpus'], False)
+            torch.utils.data.DataLoader.__init__(
+                self, self.dataset, batch_sampler=batch_sampler,
+                num_workers=self.num_workers, pin_memory=False,
+                drop_last=self.drop_last, collate_fn=self.collect_fn,
+                worker_init_fn=default_worker_init_fn)   
+
         else:
             torch.utils.data.DataLoader.__init__(
                 self, self.dataset,

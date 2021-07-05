@@ -7,13 +7,14 @@ BatchNorm2d = nn.BatchNorm2d
 import os
 
 # we will be storing the visualisations in the maps folder
+# deactivated the visualization of bin and thresh maps so that it doesnt intefere in training
 
-path='./maps'
-try: 
-    os.mkdir(path) 
-    print('maps folder created')
-except Exception as e: 
-    print('exception raised',e) 
+# path='./maps'
+# try: 
+#     os.mkdir(path) 
+#     print('maps folder created')
+# except Exception as e: 
+#     print('exception raised',e) 
 
 class SegDetector(nn.Module):
     def __init__(self,
@@ -146,19 +147,19 @@ class SegDetector(nn.Module):
         # We do not correct the name due to the trained model.
         binary = self.binarize(fuse)
         
-        # 可视化-------- visualization of the binarization map
-        binary_img = binary[0].permute((1, 2, 0)).cpu().data.numpy() * 255
-        thresh_img = self.thresh(fuse)[0].permute((1, 2, 0)).cpu().data.numpy() * 255
-        binary_img = binary_img.astype(np.uint8)
-        thresh_img = thresh_img.astype(np.uint8)
-        cv2.imwrite('maps/bin.png', binary_img)
-        binary_color_map = cv2.applyColorMap(binary_img, cv2.COLORMAP_JET)
-        cv2.imwrite('maps/cm.png', binary_color_map)
+        # # 可视化-------- visualization of the binarization map
+        # binary_img = binary[0].permute((1, 2, 0)).cpu().data.numpy() * 255
+        # thresh_img = self.thresh(fuse)[0].permute((1, 2, 0)).cpu().data.numpy() * 255
+        # binary_img = binary_img.astype(np.uint8)
+        # thresh_img = thresh_img.astype(np.uint8)
+        # cv2.imwrite('maps/bin.png', binary_img)
+        # binary_color_map = cv2.applyColorMap(binary_img, cv2.COLORMAP_JET)
+        # cv2.imwrite('maps/cm.png', binary_color_map)
 
-        cv2.imwrite('maps/thresh.png',thresh_img)
-        thresh_color_map=cv2.applyColorMap(thresh_img, cv2.COLORMAP_JET)
-        cv2.imwrite('maps/color_thresh.png',thresh_color_map)
-        # ------------------
+        # cv2.imwrite('maps/thresh.png',thresh_img)
+        # thresh_color_map=cv2.applyColorMap(thresh_img, cv2.COLORMAP_JET)
+        # cv2.imwrite('maps/color_thresh.png',thresh_color_map)
+        # # # ------------------
 
 
 

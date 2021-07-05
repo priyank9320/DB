@@ -6,6 +6,7 @@ from tqdm import tqdm
 from experiment import Experiment
 from data.data_loader import DistributedSampler
 
+import time ##
 
 class Trainer:
     def __init__(self, experiment: Experiment):
@@ -14,11 +15,11 @@ class Trainer:
         self.experiment = experiment
         self.structure = experiment.structure
         self.logger = experiment.logger
-        self.model_saver = experiment.train.model_saver
+        self.model_saver = experiment.train.model_saver # here we are also getting the model saving path
 
         # FIXME: Hack the save model path into logger path
         self.model_saver.dir_path = self.logger.save_dir(
-            self.model_saver.dir_path)
+            self.model_saver.dir_path) + str(int(time.time())) ## here I am adding the time stamp as well to create a different directory for each execution
         self.current_lr = 0
 
         self.total = 0
@@ -55,7 +56,7 @@ class Trainer:
             self.experiment.train.checkpoint.restore_model(
                 model, self.device, self.logger)
             epoch, iter_delta = self.experiment.train.checkpoint.restore_counter()
-            self.steps = epoch * self.total + iter_delta
+            self.steps = epoch * self.total + iter_delta ## need to check this for resuming the training
 
         # Init start epoch and iter
         optimizer = self.experiment.train.scheduler.create_optimizer(
@@ -63,13 +64,26 @@ class Trainer:
 
         self.logger.report_time('Init')
 
+        # self.skip_batches = 9000 ## give here how many batches to skip incase of resuming the training from middle
+        # self.skipped = 0
+
         model.train()
         while True:
             self.logger.info('Training epoch ' + str(epoch))
             self.logger.epoch(epoch)
             self.total = len(train_data_loader)
 
+            
+
             for batch in train_data_loader:
+
+                # if self.skipped <= self.skip_batches:
+                #     self.skipped +=1   
+                #     print(f'batch skipped: {self.skipped}') 
+                #     continue
+
+                #start_time=time.time()
+
                 self.update_learning_rate(optimizer, epoch, self.steps)
 
                 self.logger.report_time("Data loading")
@@ -95,8 +109,10 @@ class Trainer:
 
                 self.steps += 1
                 self.logger.report_eta(self.steps, self.total, epoch)
-
+                # print(f'time taken per batch: {time.time()-start_time}')
+    
             epoch += 1
+            
             if epoch > self.experiment.train.epochs:
                 self.model_saver.save_checkpoint(model, 'final')
                 if self.experiment.validation:
