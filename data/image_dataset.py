@@ -49,9 +49,9 @@ class ImageDataset(data.Dataset, Configurable):
             self.image_paths += image_path
             self.gt_paths += gt_path
         self.num_samples = len(self.image_paths)
-        self.targets = self.load_ann()
+        # self.targets = self.load_ann()
         if self.is_training:
-            assert len(self.image_paths) == len(self.targets)
+            assert len(self.image_paths) == len(self.gt_paths)
 
     def load_ann(self):
         res = []
@@ -76,6 +76,33 @@ class ImageDataset(data.Dataset, Configurable):
             res.append(lines)
         return res
 
+
+
+    def load_single_ann(self, index):
+        # res = []
+        gt = self.gt_paths[index]
+        lines = []
+        reader = open(gt, 'r').readlines()
+        for line in reader:
+            item = {}
+            parts = line.strip().split(',')
+            label = parts[-1]
+            if 'TD' in self.data_dir[0] and label == '1':
+                label = '###'
+            line = [i.strip('\ufeff').strip('\xef\xbb\xbf') for i in parts]
+            if 'icdar' in self.data_dir[0]:
+                poly = np.array(list(map(float, line[:8]))).reshape((-1, 2)).tolist()
+            else:
+                num_points = math.floor((len(line) - 1) / 2) * 2
+                poly = np.array(list(map(float, line[:num_points]))).reshape((-1, 2)).tolist()
+            item['poly'] = poly
+            item['text'] = label
+            lines.append(item)
+        # res.append(lines)
+        return lines
+
+
+
     def __getitem__(self, index, retry=0):
         if index >= self.num_samples:
             index = index % self.num_samples
@@ -89,7 +116,8 @@ class ImageDataset(data.Dataset, Configurable):
             data['filename'] = image_path.split('/')[-1]
             data['data_id'] = image_path.split('/')[-1]
         data['image'] = img
-        target = self.targets[index]
+        # target = self.targets[index]
+        target = self.load_single_ann(index) # calling the load single annotation 
         data['lines'] = target
         if self.processes is not None:
             for data_process in self.processes:
