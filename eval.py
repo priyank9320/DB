@@ -73,6 +73,7 @@ def main():
 
     conf = Config()
     experiment_args = conf.compile(conf.load(args['exp']))['Experiment']
+    experiment_args['train'].pop('data_loader')
     experiment_args.update(cmd=args)
     experiment = Configurable.construct_class_from_config(experiment_args)
 

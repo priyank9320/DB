@@ -6,9 +6,9 @@ define:
   - name: train_data
     class: ImageDataset
     data_dir:
-        - '/home/priyank/complete_data'    # '/home/priyank/mix_prod_orig_2'  # '/home/priyank/DB/train_trial_data'      #               #'/home/priyank/150k_processed'       # 
+        - '/home/priyank/detection-dataset-db'
     data_list:
-        - '/home/priyank/complete_data/train_list.txt' # '/home/priyank/DB/train_trial_data/train_list.txt'     #                      # '/home/priyank/150k_processed/train_list.txt'     #         #
+        - '/home/priyank/detection-dataset-db/train_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
@@ -30,9 +30,9 @@ define:
   - name: validate_data
     class: ImageDataset
     data_dir:
-        - '/home/priyank/complete_data' # '/home/priyank/DB/train_trial_data'     #         # '/home/priyank/150k_processed'     #        # 
+        - '/home/priyank/detection-dataset-db'
     data_list:
-        - '/home/priyank/complete_data/test_list.txt' # '/home/priyank/DB/train_trial_data/train_list.txt'   #         # '/home/priyank/150k_processed/test_list.txt'        #          # 
+        - '/home/priyank/detection-dataset-db/test_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:

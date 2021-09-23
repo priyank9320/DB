@@ -24,13 +24,13 @@ define:
             class: QuadMeasurer
         visualizer:  
             class: SegDetectorVisualizer
-    train: # object name
-        class: TrainSettings # class of the object "train"
-        data_loader: # object name
-            class: DataLoader # class of the object "data_loader" 
-            dataset: ^train_data # attributes
-            batch_size: 16 # attributes
-            num_workers: 20 # with num_workers >0 the DataLoader worker exits unexpectedly and throws error (https://github.com/pytorch/pytorch/issues/5301)
+    train: 
+        class: TrainSettings
+        data_loader: 
+            class: DataLoader
+            dataset: ^train_data
+            batch_size: 4 # with 16 and entire data the DataLoader worker exits unexpectedly and throws error
+            num_workers: 16
         checkpoint: 
             class: Checkpoint
             start_epoch: 0
@@ -39,7 +39,7 @@ define:
         model_saver: 
             class: ModelSaver
             dir_path: model
-            save_interval: 1000
+            save_interval: 18000
             signal_path: save
         scheduler: 
             class: OptimizerScheduler
@@ -50,8 +50,8 @@ define:
                 weight_decay: 0.0001
             learning_rate:  
                 class: DecayLearningRate
-                epochs: 30 # 1200 # this to calculate learning_rate. 
-        epochs: 30 # 1200
+                epochs: 1200 # 1200
+        epochs: 200 # 1200
 
     validation: &validate
         class: ValidationSettings
@@ -59,8 +59,8 @@ define:
             icdar2015: 
                 class: DataLoader
                 dataset: ^validate_data
-                batch_size: 16
-                num_workers: 20 # previous value was 16
+                batch_size: 1
+                num_workers: 16
                 collect_fn:
                     class: ICDARCollectFN
         visualize: false
